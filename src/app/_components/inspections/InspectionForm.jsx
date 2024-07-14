@@ -32,9 +32,12 @@ const InspectionForm = ({ currentUser }) => {
     }
 
     useEffect(() => {
+        console.log("35")
         const handleOnline = () => {
+            console.log("37")
             const offlineData = localStorage.getItem("offlineFormData");
             if (offlineData) {
+                console.log(`sss: ${offlineData}`)
                 const parsedData = JSON.parse(offlineData);
                 fetch('/api/submitInspection', {
                     method: 'POST',
@@ -49,13 +52,13 @@ const InspectionForm = ({ currentUser }) => {
                             toast({
                                 title: res.message,
                             });
-                            localStorage.removeItem("offlineFormData");
                             router.push("/claims");
                         } else {
                             toast({
                                 title: res.message,
                             });
                         }
+                        localStorage.removeItem("offlineFormData");
                     })
                     .catch((err) => {
                         console.error("Error", err);
@@ -63,13 +66,11 @@ const InspectionForm = ({ currentUser }) => {
             }
         };
 
-        window.addEventListener('online', handleOnline);
-
-        return () => {
-            window.removeEventListener('online', handleOnline);
-        };
+        if(navigator.onLine) {
+            handleOnline()
+        }
     }, [router]);
-    
+
     // console.log(currentUser);
     const handleClearForm = () => {
         localStorage.removeItem("inspectionForm");
@@ -308,11 +309,9 @@ const InspectionForm = ({ currentUser }) => {
         } else {
             console.log("offline")
             // User is offline, store data locally
-            localStorage.setItem("offlineFormData", JSON.stringify(newData));
-
-
-            await queuePostRequest(newData);
-
+            
+            
+            
             // User is offline, que post request
             const offlineData = {
                 customId: params.id,
@@ -321,6 +320,9 @@ const InspectionForm = ({ currentUser }) => {
                 claimData: claimData,
                 currentUser: currentUser.$id
             };
+            console.log(`id: ${currentUser.$id}`)
+            await queuePostRequest(offlineData);
+            localStorage.setItem("offlineFormData", JSON.stringify(offlineData));
 
             // await queuePostRequest(JSON.stringify(offlineData));
 

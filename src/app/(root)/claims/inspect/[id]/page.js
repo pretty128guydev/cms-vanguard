@@ -16,7 +16,8 @@ import { useRouter } from "next/navigation";
 const Inspection = () => {
   const params = useParams();
   const {isCurrentAdjusterClaim, loading} = useIsCurrentAdjusterClaim(params?.id);
-  // console.log("isCurrentAdjusterClaim", isCurrentAdjusterClaim);
+  console.log("isCurrentAdjusterClaim", isCurrentAdjusterClaim);
+  console.log("params", params);
   const {currentUser, isUserLoggedIn, isLoading: isAuthLoading } = useAuthContext();
   const router = useRouter();
 
