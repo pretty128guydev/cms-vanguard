@@ -32,12 +32,9 @@ const InspectionForm = ({ currentUser }) => {
     }
 
     useEffect(() => {
-        console.log("35")
         const handleOnline = () => {
-            console.log("37")
             const offlineData = localStorage.getItem("offlineFormData");
             if (offlineData) {
-                console.log(`sss: ${offlineData}`)
                 const parsedData = JSON.parse(offlineData);
                 fetch('/api/submitInspection', {
                     method: 'POST',
@@ -273,9 +270,7 @@ const InspectionForm = ({ currentUser }) => {
         if (newData.$id) {
             delete newData.$id;
         }
-        console.log(navigator.onLine)
         if (navigator.onLine) {
-            console.log("online")
             newData.description_of_damage = formData.description_of_damage;
             const onlinedata = {
                 customId: params.id,
@@ -307,7 +302,6 @@ const InspectionForm = ({ currentUser }) => {
 
 
         } else {
-            console.log("offline")
             // User is offline, store data locally
             
             
@@ -320,7 +314,6 @@ const InspectionForm = ({ currentUser }) => {
                 claimData: claimData,
                 currentUser: currentUser.$id
             };
-            console.log(`id: ${currentUser.$id}`)
             await queuePostRequest(offlineData);
             localStorage.setItem("offlineFormData", JSON.stringify(offlineData));
 
@@ -330,8 +323,6 @@ const InspectionForm = ({ currentUser }) => {
             //   title: "Form data saved offline. It will be synced once back online.",
             // });
 
-
-            console.log(offlineData)
             fetch('/api/submitInspection', {
                 method: 'POST',
                 headers: {
