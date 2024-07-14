@@ -7,6 +7,7 @@ export async function POST(request) {
     const req = await request.json();
     // console.log("test: ", req)
     const currentuserId = req.currentUser;
+    console.log(currentUser)
     // const localUserId = user.$id;
     if (!currentuserId) {
       return NextResponse.json({
