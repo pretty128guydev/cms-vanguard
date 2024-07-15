@@ -4,7 +4,7 @@ const FallbackPage = () => {
   return (
     <div>
       <h1>Offline Page</h1>
-      <p>You are currently offline. Please check your internet connection.</p>
+      <p>You are currently offline. Please check your internet connection xx3.</p>
     </div>
   );
 };

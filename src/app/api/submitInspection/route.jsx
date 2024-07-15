@@ -6,7 +6,8 @@ export async function POST(request) {
     // const user = localStorage.getItem("userData");
     const req = await request.json();
     // console.log("test: ", req)
-    const currentuserId = req.currentUser;
+    const currentuserId = await req.currentUser;
+    console.log(currentuserId)
     // const localUserId = user.$id;
     if (!currentuserId) {
       return NextResponse.json({

@@ -4,6 +4,7 @@ import webpack from "webpack";
 const withPWA = withPWAInit({
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
   extendDefaultRuntimeCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
@@ -14,13 +15,10 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   fallbacks: {
-    document: "/offline",
+    document: "/offline"
   },
   workboxOptions: {
     disableDevLogs: true,
-    runtimeCaching: [
-      // Your runtimeCaching array
-    ],
   },
 });
 
