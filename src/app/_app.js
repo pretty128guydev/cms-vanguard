@@ -12,7 +12,6 @@ function MyApp({ Component, pageProps }) {
     //     });
     //   }
     // }, []);
-
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             console.log('register serviceWorker in navigator')
@@ -35,6 +34,7 @@ function MyApp({ Component, pageProps }) {
             <Component {...pageProps} />;
         </>
     )
+
 }
 
 export default MyApp;

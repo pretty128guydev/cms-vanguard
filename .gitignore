@@ -41,8 +41,10 @@ next-env.d.ts
 **/public/worker-*.js
 **/public/fallback-*.js
 **/public/swe-*.js
+**/public/sw-*.js
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
 
 notes.md

@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 
 const Welcome = () => {
-  const { register, errors, getValues, setValue, reset, allErrors } = useClaimFormContext();
+  const { register, errors, getValues, setValue, reset, allErrors } =
+    useClaimFormContext();
   const { data, loading } = useClaimDataContext();
   const { isAdmin, isSuperAdmin } = useAuthContext();
   const router = useRouter();
@@ -19,14 +20,16 @@ const Welcome = () => {
   const [toggleValues, setToggleValues] = useState({});
   const [errorObject, setErrorObject] = useState({}); // Initialize with an empty object
   const [formKey, setFormKey] = useState(Date.now()); // Key to force re-render
-  const [shouldReset, setShouldReset] = useState(false); // State to trigger reset
 
   const handleClearForm = async () => {
+    setTimeout(() => {
+      reset(); // Reset form values using react-hook-form's reset function
+      reset({});
+      reset({});
+      setToggleValues({}); // Reset toggle values state
+    }, 1000);
     await localStorage.removeItem("formData");
-    await reset(); // Reset form values using react-hook-form's reset function
-    setToggleValues({}); // Reset toggle values state
-    setShouldReset(true); // Trigger form reset
-        toast({
+    toast({
       title: "Form cleared",
       description: "The form has been cleared.",
     });
@@ -52,7 +55,6 @@ const Welcome = () => {
     }, {});
 
     setErrorObject(errorObj);
-
   }, [allErrors]);
 
   // Get initial toggle values
@@ -69,26 +71,17 @@ const Welcome = () => {
     }
   }, [loading, data, getValues]);
 
-
-
   // Filter logic based on toggleValues
-  const filteredData = !loading && data && data.length > 0
-    ? data
-        .filter((item) => item.NavigationGroup === "Welcome")
-        .filter(
-          (item) =>
-            !item.ToggleGroup || toggleValues[item.ToggleGroup] === "Yes"
-        )
-    : [];
-  // Reset form fields when shouldReset is true
-  useEffect(() => {
-    if (shouldReset) {
-      data.forEach((item) => {
-        setValue(item.FieldName, ""); // Reset each field value
-      });
-      setShouldReset(false); // Reset the trigger
-    }
-  }, [shouldReset, filteredData, setValue]);
+  const filteredData =
+    !loading && data && data.length > 0
+      ? data
+          .filter((item) => item.NavigationGroup === "Welcome")
+          .filter(
+            (item) =>
+              !item.ToggleGroup || toggleValues[item.ToggleGroup] === "Yes"
+          )
+      : [];
+
 
   return (
     <div key={formKey} className="">

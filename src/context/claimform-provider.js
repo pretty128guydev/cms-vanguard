@@ -111,6 +111,36 @@ const ClaimFormProvider = ({ children }) => {
   const id_secondary_contact = watch("id_secondary_contact", false);
   const id_public_adjuster = watch("id_public_adjuster", false);
   const onSubmit = async (data) => {
+    // Create a map of field names to their toggle group names
+    const toggleGroups = {};
+    formQuestions.forEach((field) => {
+      if (field.ToggleGroup) {
+        toggleGroups[field.FieldName] = field.ToggleGroup;
+      }
+    });
+
+    // Create a map of toggle group values
+    const toggleGroupValues = {};
+    for (let key in data) {
+      if (toggleGroups[key]) {
+        const toggleGroupFieldName = toggleGroups[key];
+        if (data[toggleGroupFieldName]) {
+          toggleGroupValues[toggleGroupFieldName] = data[toggleGroupFieldName];
+        }
+      }
+    }
+    const newData = data;
+    for (let key in data) {
+      // If the toggle group field value is "No", set the field's newValue to null
+      const toggleGroupFieldName = toggleGroups[key];
+      if (
+        toggleGroupFieldName &&
+        toggleGroupValues[toggleGroupFieldName] === "No"
+      ) {
+        newData[key] = "";
+      }
+    }
+
     let isValidForm;
     setIsSubmitting(true);
     let formQ = formQuestions.filter((p) => p.Required === true);
@@ -140,7 +170,7 @@ const ClaimFormProvider = ({ children }) => {
     }
     if (isValidForm) {
       const sanitizedData = {
-        ...data,
+        ...newData,
         pse: data?.pse?.selected || [],
         status: "New",
         createdBy_name: currentUser?.name,
@@ -167,10 +197,10 @@ const ClaimFormProvider = ({ children }) => {
         const siteUrl = window.location.origin;
         // const url = `${siteUrl}/claims/inspect/${result?.data?.carrier_claim_number}/?id=${result?.data?.$id}`;
         const url = `${siteUrl}/claims/inspect/${result?.data?.$id}`;
+        localStorage.removeItem("formData"); // Clear local storage after successful submission
         setIsSubmitting(false);
         reset();
         nextStep();
-        localStorage.removeItem("formData"); // Clear local storage after successful submission
         const emailHtml = await assignClaimMail(
           "A new claim assigned to you.",
           result?.data?.adjuster_name,

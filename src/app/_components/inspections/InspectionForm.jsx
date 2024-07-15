@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useAdjusterNavigationContext } from "@/context/adjusterNavigation-provider";
 import { useInspectionFormContext } from "@/context/inspectionForm-provider";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Inspection from "./Forms/Inspection";
 import { FormProvider, useForm } from "react-hook-form";
 import { useInspectionDataContext } from "@/context/inspectionData-provider";
@@ -24,6 +24,7 @@ import { openDB } from "idb";
 const InspectionForm = ({ currentUser }) => {
     const { nextStep, prevStep, step, setStep } = useAdjusterNavigationContext();
     const { claimData, data, loading } = useInspectionDataContext();
+    const [isSubmiting, setIsSubmiting] = useState(false);
     const router = useRouter();
     const params = useParams();
     let claimdDataTransformed = {};
@@ -62,21 +63,21 @@ const InspectionForm = ({ currentUser }) => {
                     });
             }
         };
-
-        if(navigator.onLine) {
+        if (navigator.onLine) {
             handleOnline()
         }
     }, [router]);
-
     // console.log(currentUser);
     const handleClearForm = () => {
-        localStorage.removeItem("inspectionForm");
         // reset(claimdDataTransformed);
         setTimeout(() => {
             reset();
-            reset(claimdDataTransformed);
+            reset({});
+            reset({});
         }, 1000);
+        localStorage.removeItem("inspectionForm");
         setStep(1); // Reset to the first step
+
         toast({
             title: "Form cleared",
             description: "The form has been cleared.",
@@ -212,6 +213,7 @@ const InspectionForm = ({ currentUser }) => {
     };
 
     const onSubmit = async (formData) => {
+        setIsSubmiting(true);
         const newData = {};
         // Populate newData with oldValue
         for (let key in formData) {
@@ -270,6 +272,7 @@ const InspectionForm = ({ currentUser }) => {
         if (newData.$id) {
             delete newData.$id;
         }
+
         if (navigator.onLine) {
             newData.description_of_damage = formData.description_of_damage;
             const onlinedata = {
@@ -294,18 +297,19 @@ const InspectionForm = ({ currentUser }) => {
                 });
                 localStorage.removeItem("inspectionForm");
                 router.push("/claims");
+                setIsSubmiting(false);
             } else {
                 toast({
                     title: res.message,
                 });
+                setIsSubmiting(false);
             }
 
 
         } else {
             // User is offline, store data locally
-            
-            
-            
+            localStorage.setItem("offlineFormData", JSON.stringify(newData));
+
             // User is offline, que post request
             const offlineData = {
                 customId: params.id,
@@ -314,14 +318,18 @@ const InspectionForm = ({ currentUser }) => {
                 claimData: claimData,
                 currentUser: currentUser.$id
             };
-            await queuePostRequest(offlineData);
-            localStorage.setItem("offlineFormData", JSON.stringify(offlineData));
+
+
+            // await queuePostRequest(offlineData);
+            // localStorage.setItem("offlineFormData", JSON.stringify(offlineData));
 
             // await queuePostRequest(JSON.stringify(offlineData));
 
             // toast({
             //   title: "Form data saved offline. It will be synced once back online.",
             // });
+
+
 
             fetch('/api/submitInspection', {
                 method: 'POST',
@@ -333,40 +341,21 @@ const InspectionForm = ({ currentUser }) => {
                 .then((res) => res.json())
                 .then((res) => {
                     console.log("MESSAGE", res.message);
+                    setIsSubmiting(false);
                 })
                 .catch((err) => {
                     console.error("Error", err);
+                    setIsSubmiting(false);
                 })
                 .finally(() => {
                     console.log("Your request has been successfully submitted.\nOnce you're back online, it will be processed, and you'll receive the result via email.");
                     toast({
                         title: "Form data saved offline. It will be synced once back online.",
                     });
+                    localStorage.removeItem("offlineFormData");
+                    router.push("/claims");
+                    setIsSubmiting(false);
                 });
-
-
-
-            //   const response = await fetch('/api/submitInspection', {
-            //     method: 'POST',
-            //     headers: {
-            //       'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(offlineData),
-            //   });
-
-            //   const res=await response.json();
-            //   if(res.success) {
-            //     toast({
-            //       title: res.message,
-            //     });
-            //     localStorage.removeItem("inspectionForm");
-            //     router.push("/claims");
-            //   }else{
-            //     toast({
-            //       title: res.message,
-            //     });
-            //   }
-
         }
     };
 
@@ -403,8 +392,8 @@ const InspectionForm = ({ currentUser }) => {
                             </Button>
                         )}
                         {step === 7 && (
-                            <Button type="submit" disabled={step === 8}>
-                                Submit
+                            <Button type="submit" disabled={isSubmiting || step === 8}>
+                                <span className="flex gap-2 justify-center items-center">Submit {isSubmiting && <div className="loader w-7"></div>}</span>
                             </Button>
                         )}
                     </div>

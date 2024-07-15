@@ -62,7 +62,7 @@ const claim_attributes = [
     'estimated_repair_cost',
     'adjuster_first_name',
     'adjuster_last_name',
-    'adjuster_email_address',
+    'adjuster_email',
     'adjuster_phone',
     "additional_pse_1",
     "additional_pse_2",

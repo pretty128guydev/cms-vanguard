@@ -77,7 +77,7 @@ const ClaimForm = () => {
           )}
           {step === 7 && (
             <Button type="submit" disabled={isSubmitting}>
-              Submit {isSubmitting && <div className="loader w-10"></div>}
+              Submit {isSubmitting && <div className="loader w-8"></div>}
             </Button>
           )}
         </div>

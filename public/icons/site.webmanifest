@@ -39,5 +39,14 @@
       "sizes": "192x192",
       "type": "image/png"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+     "src": "/images/screenshot.png",
+      "sizes": "640x320",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "VNG Landmark"
+    }
+]
 }
